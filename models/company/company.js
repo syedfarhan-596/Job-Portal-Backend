@@ -27,12 +27,15 @@ const CompanyAuthSchema = new mongoose.Schema(
     },
     description: {
       type: String,
+      required: [true, "please Provide company description"],
     },
     industry: {
       type: String,
+      required: [true, "please provide industry"],
     },
     location: {
       type: String,
+      required: [true, "please provide location"],
     },
   },
   { timestamps: true }

@@ -5,6 +5,7 @@ const { AuthenticationError, BadRequestError } = require("../../erros");
 const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcryptjs");
 const JobSchema = require("../../models/jobs/jobs");
+
 //login controller
 const LoginController = async (req, res) => {
   const { email, password } = req.body;
@@ -20,7 +21,7 @@ const LoginController = async (req, res) => {
     throw new AuthenticationError("Invalid Email/Password, Please try again");
   }
   const token = user.createJWT();
-  res.status(StatusCodes.OK).json({ user: { name: user.name }, token });
+  res.status(StatusCodes.OK).json({ user: { name: user.username }, token });
 };
 
 //register controller
@@ -34,7 +35,9 @@ const RegisterController = async (req, res) => {
   const user = await UserAuth.create({ ...req.body, password: newPassword });
   const token = user.createJWT();
 
-  res.status(StatusCodes.CREATED).json({ user: { name: user.name }, token });
+  res
+    .status(StatusCodes.CREATED)
+    .json({ user: { name: user.username }, token });
 };
 
 //get user
@@ -48,28 +51,42 @@ const GetContorller = async (req, res) => {
 //update profile controller
 const UpdateController = async (req, res) => {
   const userId = req.user.userId;
+  req.body.user = req.user.userId;
+  const { education, address, skills, basic, experience, summary } = req.body;
+  const updatedFields = {};
   if (req.file) {
-    req.body.resume = `localhost:4000/resume/${req.file.filename}`;
+    updatedFields[
+      "profile.resume"
+    ] = `localhost:4000/resume/${req.file.filename}`;
   }
-  const user = await UserAuth.findByIdAndUpdate(userId, req.body, {
-    runValidators: true,
-    new: true,
-  }).select("-password");
-  res.status(StatusCodes.OK).json({ msg: "Successfully updated", user });
+  if (education) {
+    updatedFields["profile.education"] = education;
+  }
+  if (basic) {
+    updatedFields["profile.basic"] = basic;
+  }
+  if (address) {
+    updatedFields["profile.address"] = address;
+  }
+  if (skills) {
+    updatedFields["profile.skills"] = skills;
+  }
+  if (experience) {
+    updatedFields["profile.experience"] = experience;
+  }
+  if (summary) {
+    updatedFields["profile.summary"] = summary;
+  }
+  const user = await UserAuth.findOneAndUpdate(
+    { _id: userId },
+    { $set: updatedFields },
+    { new: true, runValidators: true, select: "-password" }
+  );
+  if (!user) {
+    throw new BadRequestError("No user found to update");
+  }
+  res.status(StatusCodes.OK).json({ msg: "Successfully updated" });
 };
-
-//update sub details controller
-// const UpdateSchemaController = async (req, res) => {
-//   const { schema, id } = req.params;
-//   const user = await UserAuth.findById(req.user.userId);
-//   const update = user[schema].map((item) => item.id).indexOf(id);
-//   if (update < 0) {
-//     throw new BadRequestError("Wrong id Please double check");
-//   }
-//   user[schema][update].slice();
-//   user.save();
-//   res.status(StatusCodes.OK).json({ msg: "updated", user });
-// };
 
 //get jobs
 

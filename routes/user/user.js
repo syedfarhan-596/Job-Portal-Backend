@@ -17,7 +17,7 @@ const multer = require("multer");
 const path = require("path");
 
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../uploads/resume"),
+  destination: path.join(__dirname, "../../uploads/resume"),
   filename: (req, file, cd) => {
     return cd(
       null,
@@ -37,7 +37,13 @@ const router = express.Router();
 router.route("/login").post(LoginController);
 router.route("/register").post(RegisterController);
 router.route("/get").get(UserAuthenticationMiddleware, GetContorller);
-router.route("/update").patch(UserAuthenticationMiddleware, UpdateController);
+router
+  .route("/update")
+  .patch(
+    upload.single("resumefile"),
+    UserAuthenticationMiddleware,
+    UpdateController
+  );
 router.route("/:id/apply").post(UserAuthenticationMiddleware, ApplyController);
 
 module.exports = router;

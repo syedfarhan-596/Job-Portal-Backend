@@ -17,6 +17,7 @@ const CompanyRoutes = require("./routes/company/company");
 //app
 const app = express();
 
+app.use("/resume", express.static("./uploads/resume"));
 app.use(cors());
 app.use(helmet());
 app.use(express.json());

@@ -3,6 +3,7 @@ const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcryptjs");
 const CompanyAuth = require("../../models/company/company");
 const JobSchema = require("../../models/jobs/jobs");
+const UserSchema = require("../../models/user/user");
 
 const RegisterController = async (req, res) => {
   let { password, password2 } = req.body;
@@ -81,12 +82,33 @@ const UpdateJobController = async (req, res) => {
   const job = await JobSchema.findOneAndUpdate({ _id: id }, req.body, {
     runValidators: true,
     new: true,
-  });
+  }).select("-appliedby");
   if (!job) {
     throw new BadRequestError("No job found please correct your id");
   }
   res.status(StatusCodes.OK).json({ msg: "Successfully updated", job });
 };
+
+const AllPostedJobsController = async (req, res) => {
+  const id = req.user.companyId;
+  const jobs = await JobSchema.find({ postedby: id });
+  if (!jobs) {
+    res
+      .status(StatusCodes.OK)
+      .json({ jobs: "You haven't not posted any jobs" });
+  }
+  res.status(StatusCodes.OK).json({ jobs: jobs });
+};
+
+const GetAppliedUserController = async (req, res) => {
+  const { userid } = req.params;
+  const user = await UserSchema.findOne({ _id: userid }).select("-password");
+  if (!user) {
+    throw new BadRequestError("No user found");
+  }
+  res.status(StatusCodes.OK).json({ user: user });
+};
+
 module.exports = {
   RegisterController,
   LoginController,
@@ -95,4 +117,6 @@ module.exports = {
   CreateJob,
   GetJobController,
   UpdateJobController,
+  GetAppliedUserController,
+  AllPostedJobsController,
 };
