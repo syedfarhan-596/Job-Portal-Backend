@@ -9,7 +9,6 @@ const {
   CreateJob,
   GetJobController,
   UpdateJobController,
-  GetAppliedUserController,
   AllPostedJobsController,
 } = require("../../controllers/company/company-auth");
 
@@ -29,7 +28,5 @@ router
 router
   .route("/jobs")
   .get(CompanyAuthenticationMiddleware, AllPostedJobsController);
-router
-  .route("/job/appliedby/:userid")
-  .get(CompanyAuthenticationMiddleware, GetAppliedUserController);
+
 module.exports = router;

@@ -5,6 +5,7 @@ const { AuthenticationError, BadRequestError } = require("../../erros");
 const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcryptjs");
 const JobSchema = require("../../models/jobs/jobs");
+const ApplySchema = require("../../models/apply/apply");
 
 //login controller
 const LoginController = async (req, res) => {
@@ -21,6 +22,7 @@ const LoginController = async (req, res) => {
     throw new AuthenticationError("Invalid Email/Password, Please try again");
   }
   const token = user.createJWT();
+
   res.status(StatusCodes.OK).json({ user: { name: user.username }, token });
 };
 
@@ -90,17 +92,65 @@ const UpdateController = async (req, res) => {
 
 //get jobs
 
+const GetAllJobs = async (req, res) => {
+  const { name, location, skills } = req.query;
+  const cacheKey = `jobs:${name || ""}:${location || ""}:${skills || ""}`;
+
+  // Check if the results are already in the Redis cache
+  // const cachedResults = await redisClient.get(cacheKey);
+  // if (cachedResults) {
+  //   const jobs = JSON.parse(cachedResults);
+  //   return res
+  //     .status(StatusCodes.OK)
+  //     .json({ jobs, total: jobs.length, cached: true });
+  // }
+
+  //if not in cache then query the database
+  let QueryObject = {};
+  if (name) {
+    QueryObject.title = { $regex: name, $options: "i" };
+  }
+  if (location) {
+    QueryObject.location = { $regex: location, $options: "i" };
+  }
+  if (skills && Array.isArray(skills)) {
+    QueryObject.skills = { $in: skills.map((skill) => new RegExp(skill, "i")) };
+  }
+
+  const jobs = await JobSchema.find(QueryObject);
+
+  // redisClient.set(cacheKey, JSON.stringify(jobs), "EX", 3600);
+  res.status(StatusCodes.OK).json({ jobs, total: jobs.length, cached: false });
+};
+
 //apply for jobs
 const ApplyController = async (req, res) => {
   const { id } = req.params;
   req.body.appliedby = req.user.userId;
-  req.body.name = req.user.name;
-  const job = await JobSchema.findOne({ _id: id });
-  job.appliedby.push({ ...req.body });
-  job.save();
-  res
-    .status(StatusCodes.OK)
-    .json({ msg: "applied successfully", job: job.title });
+  req.body.appliedjob = id;
+  const apply = await ApplySchema.create({ ...req.body });
+  res.status(StatusCodes.OK).json(apply);
+};
+
+//save jobs
+const SaveJobs = async (req, res) => {
+  const { id } = req.params;
+
+  req.body[0].jobId = id;
+  const user = await UserAuth.findOne({ _id: req.user.userId });
+  user.savedjobs.push({ ...req.body[0] });
+  user.save();
+
+  res.status(StatusCodes.OK).json({ msg: "Saved Successfullt" });
+};
+
+const DeleteSaveJobs = async (req, res) => {
+  const { id } = req.params;
+  let user = await UserAuth.findOne({ _id: req.user.userId });
+  const indexOfSavedJob = user.savedjobs.map((item) => item.jobId).indexOf(id);
+  user.savedjobs.splice(indexOfSavedJob, 1);
+  user.save();
+  res.status(StatusCodes.OK).json({ msg: "removed" });
 };
 
 //export modules
@@ -109,5 +159,8 @@ module.exports = {
   RegisterController,
   UpdateController,
   GetContorller,
+  GetAllJobs,
   ApplyController,
+  SaveJobs,
+  DeleteSaveJobs,
 };

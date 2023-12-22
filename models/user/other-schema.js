@@ -12,7 +12,7 @@ const ProfileSchema = mongoose.Schema({
       type: String,
     },
     contact: {
-      type: String,
+      type: Number,
     },
   },
   address: {
@@ -56,4 +56,19 @@ const ProfileSchema = mongoose.Schema({
   },
 });
 
-module.exports = ProfileSchema;
+const SavedJobSchema = new mongoose.Schema({
+  title: {
+    type: String,
+  },
+  company: {
+    type: String,
+  },
+  jobId: {
+    type: mongoose.Types.ObjectId,
+  },
+  companyId: {
+    type: mongoose.Types.ObjectId,
+  },
+});
+
+module.exports = { SavedJobSchema, ProfileSchema };

@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const ProfileSchema = require("./profile");
+const { ProfileSchema } = require("./other-schema");
+const { SavedJobSchema } = require("./other-schema");
 const UserAuthSchema = new mongoose.Schema(
   {
     username: {
@@ -26,7 +27,9 @@ const UserAuthSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide your password"],
     },
+
     profile: ProfileSchema,
+    savedjobs: [SavedJobSchema],
   },
   {
     timestamps: true,

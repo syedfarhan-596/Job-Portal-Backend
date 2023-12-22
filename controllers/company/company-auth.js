@@ -27,10 +27,10 @@ const LoginController = async (req, res) => {
   }
   const company = await CompanyAuth.findOne({ email });
   if (!company) {
-    throw new AuthenticationError("No user with ${email} this email");
+    throw new AuthenticationError(`No user with ${email} this email`);
   }
 
-  const isPasswordCorrect = company.comparePassword(password);
+  const isPasswordCorrect = await company.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new AuthenticationError(
       "Your password is incorrect please check and try again"
@@ -60,11 +60,12 @@ const UpdateController = async (req, res) => {
 
 const CreateJob = async (req, res) => {
   req.body.postedby = req.user.companyId;
-  req.body.companyname = req.user.name;
+  req.body.company = req.user.name;
+
   const job = await JobSchema.create(req.body);
   res
     .status(StatusCodes.CREATED)
-    .json({ msg: "Job Posted Successfully", job: job });
+    .json({ msg: `Job ${job.title} Posted Successfully` });
 };
 
 const GetJobController = async (req, res) => {
@@ -73,8 +74,8 @@ const GetJobController = async (req, res) => {
   if (!job) {
     throw new BadRequestError("No job found please double check id");
   }
-  const total = job.appliedby.length;
-  res.status(StatusCodes.OK).json({ job, total: total });
+
+  res.status(StatusCodes.OK).json({ job });
 };
 
 const UpdateJobController = async (req, res) => {
@@ -97,16 +98,8 @@ const AllPostedJobsController = async (req, res) => {
       .status(StatusCodes.OK)
       .json({ jobs: "You haven't not posted any jobs" });
   }
-  res.status(StatusCodes.OK).json({ jobs: jobs });
-};
-
-const GetAppliedUserController = async (req, res) => {
-  const { userid } = req.params;
-  const user = await UserSchema.findOne({ _id: userid }).select("-password");
-  if (!user) {
-    throw new BadRequestError("No user found");
-  }
-  res.status(StatusCodes.OK).json({ user: user });
+  const total = jobs.length;
+  res.status(StatusCodes.OK).json({ jobs: jobs, total: total });
 };
 
 module.exports = {
@@ -117,6 +110,5 @@ module.exports = {
   CreateJob,
   GetJobController,
   UpdateJobController,
-  GetAppliedUserController,
   AllPostedJobsController,
 };

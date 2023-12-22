@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 
-const ApplicationSchema = new mongoose.Schema({
-  appliedby: {
-    type: mongoose.Types.ObjectId,
-  },
-  name: {
+const JobSchema = new mongoose.Schema({
+  title: {
     type: String,
-    required: [true, "please provide name"],
+    requried: [true, "please provide title "],
+  },
+  company: {
+    type: String,
+    required: [true, "please provide company name"],
   },
   location: {
     type: String,
@@ -16,43 +17,45 @@ const ApplicationSchema = new mongoose.Schema({
     type: String,
     required: [true, "please provide description"],
   },
-  skills: [String],
-});
+  responsibilities: {
+    type: [String],
+    required: true,
+  },
+  qualifications: {
+    type: [String],
+  },
 
-const JobSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    requried: [true, "please provide title "],
+  skills: {
+    type: [String],
+    required: [true, "please provide skills"],
   },
-  description: {
+  employmenttype: {
     type: String,
-    required: [true, "please provide description"],
+    required: true,
   },
-  opening: {
+  experiencelevel: {
     type: String,
-    requried: [true, "Please provide number of opening"],
+    required: true,
   },
-  position: {
+  educationlevel: {
     type: String,
-    required: [true, "please provide position"],
+    required: true,
   },
-  role: {
+  salary: {
     type: String,
-    required: [true, "please provide role"],
+    required: true,
   },
-  requirement: [String],
-  package: {
-    type: String,
-    requried: [true, "please provide package "],
+  publishedat: {
+    type: Date,
+    default: Date.now,
+  },
+  applicationdeadline: {
+    type: Date,
+    required: true,
   },
   postedby: {
     type: mongoose.Types.ObjectId,
   },
-  companyname: {
-    type: String,
-    required: [true, "please provide company name"],
-  },
-  appliedby: [ApplicationSchema],
 });
 
 module.exports = mongoose.model("JobSchema", JobSchema);
