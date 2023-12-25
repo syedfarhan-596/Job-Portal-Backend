@@ -14,6 +14,7 @@ const {
   DeleteSaveJobs,
   ApplyController,
   GetAllJobs,
+  GetSingleJobController,
 } = require("../../controllers/user/user-auth");
 
 const multer = require("multer");
@@ -50,10 +51,15 @@ router
 
 router.route("/get/jobs").get(UserAuthenticationMiddleware, GetAllJobs);
 router
+  .route("/get/jobs/job/:id")
+  .get(UserAuthenticationMiddleware, GetSingleJobController);
+router
   .route("/save/job/:id")
   .post(UserAuthenticationMiddleware, SaveJobs)
   .delete(UserAuthenticationMiddleware, DeleteSaveJobs);
 
-router.route("/apply/:id").post(UserAuthenticationMiddleware, ApplyController);
+router
+  .route("/apply/:companyid/:id")
+  .post(UserAuthenticationMiddleware, ApplyController);
 
 module.exports = router;

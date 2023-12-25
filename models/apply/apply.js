@@ -5,18 +5,31 @@ const ApplySchema = new mongoose.Schema(
     appliedby: {
       type: mongoose.Types.ObjectId,
     },
-    name: {
-      type: String,
-    },
-    description: {
-      type: String,
-    },
-    skills: [String],
+
     appliedjob: {
       type: mongoose.Types.ObjectId,
     },
     appliedcompany: {
       type: mongoose.Types.ObjectId,
+    },
+    name: {
+      type: String,
+    },
+    education: {
+      type: String,
+    },
+    experience: {
+      type: String,
+    },
+    levelofexperience: {
+      type: Number,
+    },
+    skills: [String],
+    description: {
+      type: String,
+    },
+    location: {
+      type: String,
     },
   },
   {

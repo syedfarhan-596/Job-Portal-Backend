@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const CompanyAuth = require("../../models/company/company");
 const JobSchema = require("../../models/jobs/jobs");
 const UserSchema = require("../../models/user/user");
+const Apply = require("../../models/apply/apply");
 
 const RegisterController = async (req, res) => {
   let { password, password2 } = req.body;
@@ -102,6 +103,60 @@ const AllPostedJobsController = async (req, res) => {
   res.status(StatusCodes.OK).json({ jobs: jobs, total: total });
 };
 
+const GetAllAppliedUsers = async (req, res) => {
+  const { education, skills, location, experience } = req.query;
+  let QueryObject = {};
+  if (education) {
+    QueryObject.education = { $regex: education, $options: "i" };
+  }
+  if (skills && Array.isArray(skills)) {
+    QueryObject.skills = { $in: skills.map((skill) => new RegExp(skill, "i")) };
+  }
+  if (location) {
+    QueryObject.location = { $regex: location, $options: "i" };
+  }
+  if (experience) {
+    QueryObject.experience = { $regex: experience, $options: experience };
+  }
+  QueryObject.appliedcompany = req.user.companyId;
+  const applies = await Apply.find(QueryObject);
+  if (!applies) {
+    res.status(StatusCodes.OK).json({ application: "None" });
+  }
+
+  res
+    .status(StatusCodes.OK)
+    .json({ application: applies, total: applies.length });
+};
+
+const GetSingleJobAppliedUsers = async (req, res) => {
+  const { id } = req.params;
+  const { education, skills, location, experience } = req.query;
+  let QueryObject = {};
+  if (education) {
+    QueryObject.education = { $regex: education, $options: "i" };
+  }
+  if (skills && Array.isArray(skills)) {
+    QueryObject.skills = { $in: skills.map((skill) => new RegExp(skill, "i")) };
+  }
+  if (location) {
+    QueryObject.location = { $regex: location, $options: "i" };
+  }
+  if (experience) {
+    QueryObject.experience = { $regex: experience, $options: experience };
+  }
+  QueryObject.appliedjob = id;
+  const applies = await Apply.find(QueryObject);
+
+  if (!applies) {
+    res.status(StatusCodes.OK).json({ application: "None" });
+  }
+
+  res
+    .status(StatusCodes.OK)
+    .json({ application: applies, total: applies.length });
+};
+
 module.exports = {
   RegisterController,
   LoginController,
@@ -111,4 +166,6 @@ module.exports = {
   GetJobController,
   UpdateJobController,
   AllPostedJobsController,
+  GetAllAppliedUsers,
+  GetSingleJobAppliedUsers,
 };

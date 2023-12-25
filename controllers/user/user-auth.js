@@ -6,6 +6,7 @@ const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcryptjs");
 const JobSchema = require("../../models/jobs/jobs");
 const ApplySchema = require("../../models/apply/apply");
+const Company = require("../../models/company/company");
 
 //login controller
 const LoginController = async (req, res) => {
@@ -125,20 +126,32 @@ const GetAllJobs = async (req, res) => {
 
 //apply for jobs
 const ApplyController = async (req, res) => {
-  const { id } = req.params;
+  const { companyid, id } = req.params;
   req.body.appliedby = req.user.userId;
+  req.body.appliedcompany = companyid;
   req.body.appliedjob = id;
+  req.body.name = req.user.name;
   const apply = await ApplySchema.create({ ...req.body });
-  res.status(StatusCodes.OK).json(apply);
+  res.status(StatusCodes.OK).json({ msg: "Applied Successfully " });
+};
+
+//get single job
+const GetSingleJobController = async (req, res) => {
+  const { id } = req.params;
+  const job = await JobSchema.findOne({ _id: id });
+  if (!job) {
+    throw new BadRequestError("No job with that id");
+  }
+  res.status(StatusCodes.OK).json(job);
 };
 
 //save jobs
 const SaveJobs = async (req, res) => {
   const { id } = req.params;
 
-  req.body[0].jobId = id;
+  req.body.jobId = id;
   const user = await UserAuth.findOne({ _id: req.user.userId });
-  user.savedjobs.push({ ...req.body[0] });
+  user.savedjobs.push({ ...req.body });
   user.save();
 
   res.status(StatusCodes.OK).json({ msg: "Saved Successfullt" });
@@ -163,4 +176,5 @@ module.exports = {
   ApplyController,
   SaveJobs,
   DeleteSaveJobs,
+  GetSingleJobController,
 };
