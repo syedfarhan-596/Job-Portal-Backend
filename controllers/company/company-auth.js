@@ -116,14 +116,13 @@ const GetAllAppliedUsers = async (req, res) => {
     QueryObject.location = { $regex: location, $options: "i" };
   }
   if (experience) {
-    QueryObject.experience = { $regex: experience, $options: experience };
+    QueryObject.experience = { $regex: experience, $options: "i" };
   }
   QueryObject.appliedcompany = req.user.companyId;
-  const applies = await Apply.find(QueryObject);
+  const applies = await Apply.find(QueryObject).sort("createdAt");
   if (!applies) {
     res.status(StatusCodes.OK).json({ application: "None" });
   }
-
   res
     .status(StatusCodes.OK)
     .json({ application: applies, total: applies.length });
@@ -146,7 +145,7 @@ const GetSingleJobAppliedUsers = async (req, res) => {
     QueryObject.experience = { $regex: experience, $options: experience };
   }
   QueryObject.appliedjob = id;
-  const applies = await Apply.find(QueryObject);
+  const applies = await Apply.find(QueryObject).sort("createdAt");
 
   if (!applies) {
     res.status(StatusCodes.OK).json({ application: "None" });
@@ -155,6 +154,18 @@ const GetSingleJobAppliedUsers = async (req, res) => {
   res
     .status(StatusCodes.OK)
     .json({ application: applies, total: applies.length });
+};
+
+// get one single user
+const GetSingleUser = async (req, res) => {
+  const { userId } = req.params;
+  const user = await UserSchema.findOne({ _id: userId }).select(
+    "username email profile"
+  );
+  if (!user) {
+    throw new BadRequestError("Wrong ID please double check");
+  }
+  res.status(StatusCodes.OK).json({ user });
 };
 
 module.exports = {
@@ -168,4 +179,5 @@ module.exports = {
   AllPostedJobsController,
   GetAllAppliedUsers,
   GetSingleJobAppliedUsers,
+  GetSingleUser,
 };

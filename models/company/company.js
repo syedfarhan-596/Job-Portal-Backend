@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const CompanyAuthSchema = new mongoose.Schema(
+const CompanySchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -41,7 +41,7 @@ const CompanyAuthSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-CompanyAuthSchema.methods.createJWT = function () {
+CompanySchema.methods.createJWT = function () {
   return jwt.sign(
     { companyId: this.id, name: this.name },
     process.env.JWT_COMPANY,
@@ -49,7 +49,7 @@ CompanyAuthSchema.methods.createJWT = function () {
   );
 };
 
-CompanyAuthSchema.methods.comparePassword = async function (candidatePassword) {
+CompanySchema.methods.comparePassword = async function (candidatePassword) {
   const isPasswordCorrect = await bcrypt.compare(
     candidatePassword,
     this.password
@@ -57,4 +57,4 @@ CompanyAuthSchema.methods.comparePassword = async function (candidatePassword) {
   return isPasswordCorrect;
 };
 
-module.exports = mongoose.model("Company", CompanyAuthSchema);
+module.exports = mongoose.model("Company", CompanySchema);

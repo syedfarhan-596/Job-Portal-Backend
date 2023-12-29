@@ -10,6 +10,12 @@ const JobSchema = new mongoose.Schema(
       type: String,
       required: [true, "please provide company name"],
     },
+    companyDescription: {
+      type: String,
+    },
+    industry: {
+      type: String,
+    },
     location: {
       type: String,
       required: [true, "please provide location"],
@@ -45,10 +51,6 @@ const JobSchema = new mongoose.Schema(
     salary: {
       type: String,
       required: true,
-    },
-    publishedat: {
-      type: Date,
-      default: Date.now,
     },
     applicationdeadline: {
       type: Date,

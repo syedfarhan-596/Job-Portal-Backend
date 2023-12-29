@@ -5,10 +5,10 @@ const ProfileSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
   },
   basic: {
-    firstname: {
+    firstName: {
       type: String,
     },
-    lastname: {
+    lastName: {
       type: String,
     },
     contact: {
@@ -19,7 +19,7 @@ const ProfileSchema = mongoose.Schema({
     street: { type: String },
     city: { type: String },
     state: { type: String },
-    postalcode: { type: String },
+    postalCode: { type: String },
     country: { type: String },
   },
   skills: {

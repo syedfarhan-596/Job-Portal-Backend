@@ -3,56 +3,56 @@ const express = require("express");
 
 //import middleware
 const UserAuthenticationMiddleware = require("../../middlewares/user/user-auth");
+const Multer = require("../../multer");
 
 //import controllers
 const {
-  LoginController,
-  RegisterController,
-  UpdateController,
-  GetContorller,
+  UserLoginController,
+  UserRegisterController,
+  UserGetController,
+  UserGetAllJobs,
+  UserUpdateProfileController,
+  UserSingleJobController,
+  UserApplyController,
+
   SaveJobs,
   DeleteSaveJobs,
-  ApplyController,
-  GetAllJobs,
-  GetSingleJobController,
-} = require("../../controllers/user/user-auth");
+} = require("../../controllers/user");
+const {
+  GetUserSingleJobController,
+} = require("../../controllers/user/get-job");
 
-const multer = require("multer");
-const path = require("path");
-
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../../uploads/resume"),
-  filename: (req, file, cd) => {
-    return cd(
-      null,
-      `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`
-    );
-  },
-});
-const upload = multer({
-  storage: storage,
-});
+//multer
+const upload = Multer();
 
 //using router
 const router = express.Router();
 
 //user routes
 
-router.route("/login").post(LoginController);
-router.route("/register").post(RegisterController);
-router.route("/get").get(UserAuthenticationMiddleware, GetContorller);
+// login route for user
+router.route("/login").post(UserLoginController);
+
+// register route for user
+
+router.route("/register").post(UserRegisterController);
+
+// get user route
+router.route("/get").get(UserAuthenticationMiddleware, UserGetController);
+
 router
   .route("/update")
   .patch(
     upload.single("resumefile"),
     UserAuthenticationMiddleware,
-    UpdateController
+    UserUpdateProfileController
   );
 
-router.route("/get/jobs").get(UserAuthenticationMiddleware, GetAllJobs);
+router.route("/get/jobs").get(UserAuthenticationMiddleware, UserGetAllJobs);
 router
   .route("/get/jobs/job/:id")
-  .get(UserAuthenticationMiddleware, GetSingleJobController);
+  .get(UserAuthenticationMiddleware, UserSingleJobController);
+
 router
   .route("/save/job/:id")
   .post(UserAuthenticationMiddleware, SaveJobs)
@@ -60,6 +60,6 @@ router
 
 router
   .route("/apply/:companyid/:id")
-  .post(UserAuthenticationMiddleware, ApplyController);
+  .post(UserAuthenticationMiddleware, UserApplyController);
 
 module.exports = router;

@@ -12,6 +12,7 @@ const {
   AllPostedJobsController,
   GetAllAppliedUsers,
   GetSingleJobAppliedUsers,
+  GetSingleUser,
 } = require("../../controllers/company/company-auth");
 
 router.route("/login").post(LoginController);
@@ -37,5 +38,9 @@ router
 router
   .route("/get/applied/users/job/:id")
   .get(CompanyAuthenticationMiddleware, GetSingleJobAppliedUsers);
+
+router
+  .route("/get/applied/users/user/:userId")
+  .get(CompanyAuthenticationMiddleware, GetSingleUser);
 
 module.exports = router;

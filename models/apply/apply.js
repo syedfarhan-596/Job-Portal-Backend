@@ -2,17 +2,20 @@ const mongoose = require("mongoose");
 
 const ApplySchema = new mongoose.Schema(
   {
-    appliedby: {
+    appliedByUserId: {
       type: mongoose.Types.ObjectId,
     },
 
-    appliedjob: {
+    appliedJobId: {
       type: mongoose.Types.ObjectId,
     },
-    appliedcompany: {
+    appliedCompanyId: {
       type: mongoose.Types.ObjectId,
     },
-    name: {
+    firstName: {
+      type: String,
+    },
+    lastName: {
       type: String,
     },
     education: {
@@ -21,13 +24,11 @@ const ApplySchema = new mongoose.Schema(
     experience: {
       type: String,
     },
-    levelofexperience: {
+    experienceTime: {
       type: Number,
     },
     skills: [String],
-    description: {
-      type: String,
-    },
+
     location: {
       type: String,
     },
@@ -37,6 +38,6 @@ const ApplySchema = new mongoose.Schema(
   }
 );
 
-ApplySchema.index({ appliedby: 1, appliedjob: 1 }, { unique: true });
+ApplySchema.index({ appliedByUserId: 1, appliedJobId: 1 }, { unique: true });
 
 module.exports = mongoose.model("Apply", ApplySchema);

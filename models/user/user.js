@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { ProfileSchema } = require("./other-schema");
 const { SavedJobSchema } = require("./other-schema");
-const UserAuthSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
@@ -36,7 +36,7 @@ const UserAuthSchema = new mongoose.Schema(
   }
 );
 
-UserAuthSchema.methods.createJWT = function () {
+UserSchema.methods.createJWT = function () {
   return jwt.sign(
     { userId: this.id, name: this.username },
     process.env.JWT_SECRET,
@@ -44,7 +44,7 @@ UserAuthSchema.methods.createJWT = function () {
   );
 };
 
-UserAuthSchema.methods.comparePassword = async function (candidatePassword) {
+UserSchema.methods.comparePassword = async function (candidatePassword) {
   const isPasswordValid = await bcrypt.compare(
     candidatePassword,
     this.password
@@ -52,4 +52,4 @@ UserAuthSchema.methods.comparePassword = async function (candidatePassword) {
   return isPasswordValid;
 };
 
-module.exports = mongoose.model("UserAuth", UserAuthSchema);
+module.exports = mongoose.model("UserSchema", UserSchema);
