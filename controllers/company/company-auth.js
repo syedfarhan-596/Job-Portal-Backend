@@ -60,7 +60,7 @@ const UpdateController = async (req, res) => {
 };
 
 const CreateJob = async (req, res) => {
-  req.body.postedby = req.user.companyId;
+  req.body.postedBy = req.user.companyId;
   req.body.company = req.user.name;
 
   const job = await JobSchema.create(req.body);
@@ -93,13 +93,14 @@ const UpdateJobController = async (req, res) => {
 
 const AllPostedJobsController = async (req, res) => {
   const id = req.user.companyId;
-  const jobs = await JobSchema.find({ postedby: id });
+  const jobs = await JobSchema.find({ postedBy: id });
   if (!jobs) {
     res
       .status(StatusCodes.OK)
       .json({ jobs: "You haven't not posted any jobs" });
   }
   const total = jobs.length;
+
   res.status(StatusCodes.OK).json({ jobs: jobs, total: total });
 };
 
