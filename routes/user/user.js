@@ -59,7 +59,7 @@ router
   .delete(UserAuthenticationMiddleware, DeleteSaveJobs);
 
 router
-  .route("/apply/:companyid/:id")
+  .route("/apply/:companyId/:jobId")
   .post(UserAuthenticationMiddleware, UserApplyController);
 
 module.exports = router;

@@ -3,10 +3,13 @@ const { StatusCodes } = require("http-status-codes");
 
 const UserApplyController = async (req, res) => {
   const { companyId, jobId } = req.params;
-  req.body.appliedByUserId = req.user.userId;
-  req.body.appliedCompanyId = companyId;
-  req.body.appliedJob = jobId;
-  const apply = await ApplySchema.create({ ...req.body });
+
+  const apply = await ApplySchema.create({
+    ...req.body,
+    appliedByUserId: req.user.userId,
+    appliedCompanyId: companyId,
+    appliedJobId: jobId,
+  });
   res.status(StatusCodes.OK).json({ msg: `Applied Successfully  ` });
 };
 

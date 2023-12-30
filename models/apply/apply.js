@@ -40,4 +40,4 @@ const ApplySchema = new mongoose.Schema(
 
 ApplySchema.index({ appliedByUserId: 1, appliedJobId: 1 }, { unique: true });
 
-module.exports = mongoose.model("Apply", ApplySchema);
+module.exports = mongoose.model("ApplySchema", ApplySchema);
