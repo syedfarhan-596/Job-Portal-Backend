@@ -13,6 +13,7 @@ const {
   GetAllAppliedUsers,
   GetSingleJobAppliedUsers,
   GetSingleUser,
+  DeleteJob,
 } = require("../../controllers/company/company-auth");
 
 router.route("/login").post(LoginController);
@@ -43,4 +44,7 @@ router
   .route("/get/applied/users/user/:userId")
   .get(CompanyAuthenticationMiddleware, GetSingleUser);
 
+router
+  .route("/delete/job/:jobId")
+  .delete(CompanyAuthenticationMiddleware, DeleteJob);
 module.exports = router;

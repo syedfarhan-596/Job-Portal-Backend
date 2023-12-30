@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const CompanyAuth = require("../../models/company/company");
 const JobSchema = require("../../models/jobs/jobs");
 const UserSchema = require("../../models/user/user");
-const Apply = require("../../models/apply/apply");
+const ApplySchema = require("../../models/apply/apply");
 
 const RegisterController = async (req, res) => {
   let { password, password2 } = req.body;
@@ -119,14 +119,14 @@ const GetAllAppliedUsers = async (req, res) => {
   if (experience) {
     QueryObject.experience = { $regex: experience, $options: "i" };
   }
-  QueryObject.appliedcompany = req.user.companyId;
-  const applies = await Apply.find(QueryObject).sort("createdAt");
-  if (!applies) {
+  QueryObject.appliedCompanyId = req.user.companyId;
+  const applications = await ApplySchema.find(QueryObject).sort("createdAt");
+  if (!applications) {
     res.status(StatusCodes.OK).json({ application: "None" });
   }
   res
     .status(StatusCodes.OK)
-    .json({ application: applies, total: applies.length });
+    .json({ application: applications, total: applications.length });
 };
 
 const GetSingleJobAppliedUsers = async (req, res) => {
@@ -145,16 +145,16 @@ const GetSingleJobAppliedUsers = async (req, res) => {
   if (experience) {
     QueryObject.experience = { $regex: experience, $options: experience };
   }
-  QueryObject.appliedjob = id;
-  const applies = await Apply.find(QueryObject).sort("createdAt");
+  QueryObject.appliedJobId = id;
+  const application = await ApplySchema.find(QueryObject);
 
-  if (!applies) {
+  if (!application) {
     res.status(StatusCodes.OK).json({ application: "None" });
   }
 
   res
     .status(StatusCodes.OK)
-    .json({ application: applies, total: applies.length });
+    .json({ application: application, total: application.length });
 };
 
 // get one single user
@@ -169,6 +169,15 @@ const GetSingleUser = async (req, res) => {
   res.status(StatusCodes.OK).json({ user });
 };
 
+const DeleteJob = async (req, res) => {
+  const { jobId } = req.params;
+  const job = await JobSchema.findOneAndDelete({ _id: jobId });
+  if (!job) {
+    throw new BadRequestError("Invalid Job Id");
+  }
+  res.status(StatusCodes.OK).json({ msg: "Deleted Successfully" });
+};
+
 module.exports = {
   RegisterController,
   LoginController,
@@ -181,4 +190,5 @@ module.exports = {
   GetAllAppliedUsers,
   GetSingleJobAppliedUsers,
   GetSingleUser,
+  DeleteJob,
 };
