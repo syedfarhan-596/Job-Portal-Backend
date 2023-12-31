@@ -172,6 +172,7 @@ const GetSingleUser = async (req, res) => {
 const DeleteJob = async (req, res) => {
   const { jobId } = req.params;
   const job = await JobSchema.findOneAndDelete({ _id: jobId });
+  await ApplySchema.deleteMany({ appliedJobId: jobId });
   if (!job) {
     throw new BadRequestError("Invalid Job Id");
   }

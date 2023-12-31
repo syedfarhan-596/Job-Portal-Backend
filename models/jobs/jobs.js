@@ -20,6 +20,9 @@ const JobSchema = new mongoose.Schema(
       type: String,
       required: [true, "please provide location"],
     },
+    jobType: {
+      type: String,
+    },
     description: {
       type: String,
       required: [true, "please provide description"],
@@ -36,25 +39,29 @@ const JobSchema = new mongoose.Schema(
       type: [String],
       required: [true, "please provide skills"],
     },
-    employmenttype: {
+    employmentType: {
       type: String,
       required: true,
     },
-    experiencelevel: {
+    experienceLevel: {
       type: String,
       required: true,
     },
-    educationlevel: {
+    educationLevel: {
       type: String,
       required: true,
     },
-    salary: {
-      type: String,
+    minSalary: {
+      type: Number,
       required: true,
     },
-    applicationdeadline: {
+    maxSalary: {
+      type: Number,
+      required: true,
+    },
+    applicationDeadLine: {
       type: Date,
-      required: true,
+      default: new Date().setFullYear(),
     },
     postedBy: {
       type: mongoose.Types.ObjectId,
