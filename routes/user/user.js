@@ -14,13 +14,12 @@ const {
   UserUpdateProfileController,
   UserSingleJobController,
   UserApplyController,
-
+  UserGetAllConversations,
   SaveJobs,
   DeleteSaveJobs,
-} = require("../../controllers/user");
-const {
-  GetUserSingleJobController,
-} = require("../../controllers/user/get-job");
+  GetMessages,
+  SendMessage,
+} = require("../../controllers/user/user");
 
 //multer
 const upload = Multer();
@@ -61,5 +60,15 @@ router
 router
   .route("/apply/:companyId/:jobId")
   .post(UserAuthenticationMiddleware, UserApplyController);
+
+router
+  .route("/messages")
+  .get(UserAuthenticationMiddleware, UserGetAllConversations);
+
+router
+  .route("/messages/:conversationId")
+  .get(UserAuthenticationMiddleware, GetMessages);
+
+router.route("/send/message").post(UserAuthenticationMiddleware, SendMessage);
 
 module.exports = router;

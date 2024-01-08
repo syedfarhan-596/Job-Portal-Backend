@@ -6,6 +6,9 @@ const JobSchema = require("../../models/jobs/jobs");
 const UserSchema = require("../../models/user/user");
 const ApplySchema = require("../../models/apply/apply");
 
+const ConversationSchema = require("../../models/conversation/conversation");
+const MessageSchema = require("../../models/conversation/message");
+
 const RegisterController = async (req, res) => {
   let { password, password2 } = req.body;
   if (password !== password2) {
@@ -72,6 +75,7 @@ const CreateJob = async (req, res) => {
 const GetJobController = async (req, res) => {
   const { id } = req.params;
   const job = await JobSchema.findOne({ _id: id });
+
   if (!job) {
     throw new BadRequestError("No job found please double check id");
   }
@@ -179,6 +183,50 @@ const DeleteJob = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "Deleted Successfully" });
 };
 
+// create conversation or start conversation
+
+const NewConversationController = async (req, res) => {
+  const existingConversation = await ConversationSchema.findOne({
+    members: { $all: [req.user.companyId, req.body.receiverId] },
+  });
+
+  if (!existingConversation) {
+    const newConversation = await ConversationSchema.create({
+      members: [req.user.companyId, req.body.receiverId],
+    });
+
+    res.status(StatusCodes.OK).json(newConversation);
+  }
+  res.status(StatusCodes.OK).json(existingConversation);
+};
+
+const GetConversationController = async (req, res) => {
+  const conversations = await ConversationSchema.find({
+    members: { $in: [req.user.companyId] },
+  });
+  const usersPromises = conversations.map(async (item) => {
+    const userId = item.members.find((id) => id !== req.user.companyId);
+    const user = await UserSchema.findById(userId).select("username email");
+    return { ...user.toObject(), conversationId: item._id };
+  });
+  const conversationUsers = await Promise.all(usersPromises);
+
+  res.status(StatusCodes.OK).json(conversationUsers);
+};
+
+//new message
+const SendMessage = async (req, res) => {
+  const newMessage = await MessageSchema.create(req.body);
+  res.status(StatusCodes.OK).json(newMessage);
+};
+
+//get message
+const GetMessages = async (req, res) => {
+  const { conversationId } = req.params;
+  const messages = await MessageSchema.find({ conversationId });
+  res.status(StatusCodes.OK).json(messages);
+};
+
 module.exports = {
   RegisterController,
   LoginController,
@@ -191,5 +239,9 @@ module.exports = {
   GetAllAppliedUsers,
   GetSingleJobAppliedUsers,
   GetSingleUser,
+  NewConversationController,
   DeleteJob,
+  GetConversationController,
+  SendMessage,
+  GetMessages,
 };

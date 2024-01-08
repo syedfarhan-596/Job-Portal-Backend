@@ -14,6 +14,10 @@ const {
   GetSingleJobAppliedUsers,
   GetSingleUser,
   DeleteJob,
+  NewConversationController,
+  GetConversationController,
+  SendMessage,
+  GetMessages,
 } = require("../../controllers/company/company-auth");
 
 router.route("/login").post(LoginController);
@@ -47,4 +51,18 @@ router
 router
   .route("/delete/job/:jobId")
   .delete(CompanyAuthenticationMiddleware, DeleteJob);
+
+router
+  .route("/messages")
+  .post(CompanyAuthenticationMiddleware, NewConversationController)
+  .get(CompanyAuthenticationMiddleware, GetConversationController);
+
+router
+  .route("/messages/:conversationId")
+  .get(CompanyAuthenticationMiddleware, GetMessages);
+
+router
+  .route("/send/message")
+  .post(CompanyAuthenticationMiddleware, SendMessage);
+
 module.exports = router;
