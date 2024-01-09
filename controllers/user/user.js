@@ -6,6 +6,7 @@ const ApplySchema = require("../../models/apply/apply");
 const ConversationSchema = require("../../models/conversation/conversation");
 const MessageSchema = require("../../models/conversation/message");
 const Company = require("../../models/company/company");
+const JobSchema = require("../../models/jobs/jobs");
 
 const UserLoginController = async (req, res) => {
   const { email, password } = req.body;
