@@ -80,17 +80,6 @@ const UserUpdateProfileController = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "Successfully updated" });
 };
 
-const SaveJobs = async (req, res) => {
-  const { id } = req.params;
-
-  req.body.jobId = id;
-  const user = await UserSchema.findOne({ _id: req.user.userId });
-  user.savedjobs.push({ ...req.body });
-  user.save();
-
-  res.status(StatusCodes.OK).json({ msg: "Saved Successfullt" });
-};
-
 const UserGetController = async (req, res) => {
   const user = await UserSchema.findOne({ _id: req.user.userId }).select(
     "-password"
@@ -114,8 +103,7 @@ const UserGetAllJobs = async (req, res) => {
 
   const jobs = await JobSchema.find(QueryObject).sort("createdAt");
 
-  // redisClient.set(cacheKey, JSON.stringify(jobs), "EX", 3600);
-  res.status(StatusCodes.OK).json({ jobs, total: jobs.length, cached: false });
+  res.status(StatusCodes.OK).json({ jobs, total: jobs.length });
 };
 
 const UserSingleJobController = async (req, res) => {
@@ -154,10 +142,21 @@ const GetMessages = async (req, res) => {
   res.status(StatusCodes.OK).json(messages);
 };
 
+const SaveJobs = async (req, res) => {
+  const id = req.body.jobId;
+
+  req.body.jobId = id;
+  const user = await UserSchema.findOne({ _id: req.user.userId });
+  user.savedjobs.push({ ...req.body });
+  user.save();
+  res.status(StatusCodes.OK).json({ msg: "Saved Successfully" });
+};
+
 const DeleteSaveJobs = async (req, res) => {
   const { id } = req.params;
   let user = await UserSchema.findOne({ _id: req.user.userId });
   const indexOfSavedJob = user.savedjobs.map((item) => item.jobId).indexOf(id);
+  console.log(indexOfSavedJob);
   user.savedjobs.splice(indexOfSavedJob, 1);
   user.save();
   res.status(StatusCodes.OK).json({ msg: "removed" });

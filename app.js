@@ -14,6 +14,10 @@ const NotFoundError = require("./erros/not-found");
 const UserRoutes = require("./routes/user/user");
 const CompanyRoutes = require("./routes/company/company");
 
+//schemas
+const JobSchema = require("./models/jobs/jobs");
+const { StatusCodes } = require("http-status-codes");
+
 //app
 const app = express();
 
@@ -21,6 +25,21 @@ app.use("/resume", express.static("./uploads/resume"));
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
+
+app.get("/jobs", async (req, res) => {
+  const { name, locaiton } = req.query;
+  let QueryObject = {};
+  if (name) {
+    QueryObject.title = { $regex: name, $options: "i" };
+  }
+  if (locaiton) {
+    QueryObject.location = { $regex: location, $options: "i" };
+  }
+
+  const jobs = await JobSchema.find(QueryObject).sort("createdAt");
+
+  res.status(StatusCodes.OK).json({ jobs, total: jobs.length });
+});
 
 app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/company", CompanyRoutes);
