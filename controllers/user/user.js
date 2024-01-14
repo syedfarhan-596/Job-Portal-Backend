@@ -44,7 +44,15 @@ const UserRegisterController = async (req, res) => {
 const UserUpdateProfileController = async (req, res) => {
   const userId = req.user.userId;
   req.body.user = req.user.userId;
-  const { education, address, skills, basic, experience, summary } = req.body;
+  const {
+    education,
+    address,
+    skills,
+    basic,
+    experience,
+    summary,
+    preferences,
+  } = req.body;
   const updatedFields = {};
   if (req.file) {
     updatedFields[
@@ -68,6 +76,12 @@ const UserUpdateProfileController = async (req, res) => {
   }
   if (summary) {
     updatedFields["profile.summary"] = summary;
+  }
+  if (preferences) {
+    updatedFields["preferences"] = {
+      location: preferences.location,
+      jobTitle: preferences.jobTitle,
+    };
   }
   const user = await UserSchema.findOneAndUpdate(
     { _id: userId },
@@ -100,7 +114,6 @@ const UserGetAllJobs = async (req, res) => {
   if (skills && Array.isArray(skills)) {
     QueryObject.skills = { $in: skills.map((skill) => new RegExp(skill, "i")) };
   }
-
   const jobs = await JobSchema.find(QueryObject).sort("createdAt");
 
   res.status(StatusCodes.OK).json({ jobs, total: jobs.length });
@@ -130,19 +143,19 @@ const UserGetAllConversations = async (req, res) => {
 };
 
 //new message
-const SendMessage = async (req, res) => {
+const UserSendMessage = async (req, res) => {
   const newMessage = await MessageSchema.create(req.body);
   res.status(StatusCodes.OK).json(newMessage);
 };
 
 //get message
-const GetMessages = async (req, res) => {
+const UserGetMessages = async (req, res) => {
   const { conversationId } = req.params;
   const messages = await MessageSchema.find({ conversationId });
   res.status(StatusCodes.OK).json(messages);
 };
 
-const SaveJobs = async (req, res) => {
+const UserSaveJob = async (req, res) => {
   const id = req.body.jobId;
 
   req.body.jobId = id;
@@ -152,11 +165,10 @@ const SaveJobs = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "Saved Successfully" });
 };
 
-const DeleteSaveJobs = async (req, res) => {
+const UserUnsaveJob = async (req, res) => {
   const { id } = req.params;
   let user = await UserSchema.findOne({ _id: req.user.userId });
   const indexOfSavedJob = user.savedjobs.map((item) => item.jobId).indexOf(id);
-  console.log(indexOfSavedJob);
   user.savedjobs.splice(indexOfSavedJob, 1);
   user.save();
   res.status(StatusCodes.OK).json({ msg: "removed" });
@@ -174,17 +186,37 @@ const UserApplyController = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: `Applied Successfully  ` });
 };
 
+const UserGetJobsById = async (req, res) => {
+  const jobIds = req.body?.savedJobs?.map((item) => item.jobId);
+  const jobs = await JobSchema.find({ _id: { $in: jobIds } });
+
+  res.status(StatusCodes.OK).json(jobs);
+};
+
+const UserGetCompanies = async (req, res) => {
+  const companies = await Company.find({}).select("-email -password ");
+  res.status(StatusCodes.OK).json(companies);
+};
+
+const UserGetCompanyJobs = async (req, res) => {
+  const jobs = await JobSchema.find({ postedBy: req.params.companyId });
+  res.status(StatusCodes.OK).json(jobs);
+};
+
 module.exports = {
   UserLoginController,
   UserRegisterController,
   UserUpdateProfileController,
-  SaveJobs,
+  UserSaveJob,
   UserGetAllJobs,
   UserGetController,
   UserSingleJobController,
   UserGetAllConversations,
   UserApplyController,
-  DeleteSaveJobs,
-  GetMessages,
-  SendMessage,
+  UserUnsaveJob,
+  UserGetMessages,
+  UserSendMessage,
+  UserGetJobsById,
+  UserGetCompanies,
+  UserGetCompanyJobs,
 };

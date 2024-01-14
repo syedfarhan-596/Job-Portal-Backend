@@ -15,10 +15,13 @@ const {
   UserSingleJobController,
   UserApplyController,
   UserGetAllConversations,
-  SaveJobs,
-  DeleteSaveJobs,
-  GetMessages,
-  SendMessage,
+  UserSaveJob,
+  UserUnsaveJob,
+  UserGetMessages,
+  UserSendMessage,
+  UserGetJobsById,
+  UserGetCompanies,
+  UserGetCompanyJobs,
 } = require("../../controllers/user/user");
 
 //multer
@@ -54,8 +57,8 @@ router
 
 router
   .route("/save/job/:id")
-  .post(UserAuthenticationMiddleware, SaveJobs)
-  .delete(UserAuthenticationMiddleware, DeleteSaveJobs);
+  .post(UserAuthenticationMiddleware, UserSaveJob)
+  .delete(UserAuthenticationMiddleware, UserUnsaveJob);
 
 router
   .route("/apply/:companyId/:jobId")
@@ -67,8 +70,21 @@ router
 
 router
   .route("/messages/:conversationId")
-  .get(UserAuthenticationMiddleware, GetMessages);
+  .get(UserAuthenticationMiddleware, UserGetMessages);
 
-router.route("/send/message").post(UserAuthenticationMiddleware, SendMessage);
+router
+  .route("/send/message")
+  .post(UserAuthenticationMiddleware, UserSendMessage);
+
+router
+  .route("/user/get/jobs/ids")
+  .post(UserAuthenticationMiddleware, UserGetJobsById);
+
+router
+  .route("/get/companies")
+  .get(UserAuthenticationMiddleware, UserGetCompanies);
+router
+  .route("/get/jobs/:companyId")
+  .get(UserAuthenticationMiddleware, UserGetCompanyJobs);
 
 module.exports = router;

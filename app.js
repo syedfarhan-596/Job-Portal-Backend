@@ -17,6 +17,7 @@ const CompanyRoutes = require("./routes/company/company");
 //schemas
 const JobSchema = require("./models/jobs/jobs");
 const { StatusCodes } = require("http-status-codes");
+const Company = require("./models/company/company");
 
 //app
 const app = express();
@@ -39,6 +40,11 @@ app.get("/jobs", async (req, res) => {
   const jobs = await JobSchema.find(QueryObject).sort("createdAt");
 
   res.status(StatusCodes.OK).json({ jobs, total: jobs.length });
+});
+
+app.get("/companies", async (req, res) => {
+  const companies = await Company.find({}).select("name location industry");
+  res.status(StatusCodes.OK).json(companies);
 });
 
 app.use("/api/v1/user", UserRoutes);
