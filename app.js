@@ -19,6 +19,10 @@ const JobSchema = require("./models/jobs/jobs");
 const { StatusCodes } = require("http-status-codes");
 const Company = require("./models/company/company");
 
+//job service class import
+const UserJobs = require("./services/user/user-jobs");
+const Userservices = require("./services/user/user-services");
+
 //app
 const app = express();
 
@@ -28,22 +32,14 @@ app.use(helmet());
 app.use(express.json());
 
 app.get("/jobs", async (req, res) => {
-  const { name, locaiton } = req.query;
-  let QueryObject = {};
-  if (name) {
-    QueryObject.title = { $regex: name, $options: "i" };
-  }
-  if (locaiton) {
-    QueryObject.location = { $regex: location, $options: "i" };
-  }
-
-  const jobs = await JobSchema.find(QueryObject).sort("createdAt");
-
+  const queryData = req.query;
+  const { jobs } = await UserJobs.getAllJobs(queryData);
   res.status(StatusCodes.OK).json({ jobs, total: jobs.length });
 });
 
 app.get("/companies", async (req, res) => {
-  const companies = await Company.find({}).select("name location industry");
+  const queryData = req.query;
+  const { companies } = await Userservices.getCompanies(queryData);
   res.status(StatusCodes.OK).json(companies);
 });
 

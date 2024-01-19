@@ -24,24 +24,18 @@ const {
   UserGetCompanyJobs,
 } = require("../../controllers/user/user");
 
-//multer
+//multer to handle files
 const upload = Multer();
 
-//using router
+//express router
 const router = express.Router();
 
-//user routes
-
-// login route for user
+// Auth user routes
 router.route("/login").post(UserLoginController);
-
-// register route for user
-
 router.route("/register").post(UserRegisterController);
 
-// get user route
+// User routes
 router.route("/get").get(UserAuthenticationMiddleware, UserGetController);
-
 router
   .route("/update")
   .patch(
@@ -49,12 +43,6 @@ router
     UserAuthenticationMiddleware,
     UserUpdateProfileController
   );
-
-router.route("/get/jobs").get(UserAuthenticationMiddleware, UserGetAllJobs);
-router
-  .route("/get/jobs/job/:id")
-  .get(UserAuthenticationMiddleware, UserSingleJobController);
-
 router
   .route("/save/job/:id")
   .post(UserAuthenticationMiddleware, UserSaveJob)
@@ -77,12 +65,19 @@ router
   .post(UserAuthenticationMiddleware, UserSendMessage);
 
 router
+  .route("/get/companies")
+  .get(UserAuthenticationMiddleware, UserGetCompanies);
+
+//job routes
+router.route("/get/jobs").get(UserAuthenticationMiddleware, UserGetAllJobs);
+router
+  .route("/get/jobs/job/:id")
+  .get(UserAuthenticationMiddleware, UserSingleJobController);
+
+router
   .route("/user/get/jobs/ids")
   .post(UserAuthenticationMiddleware, UserGetJobsById);
 
-router
-  .route("/get/companies")
-  .get(UserAuthenticationMiddleware, UserGetCompanies);
 router
   .route("/get/jobs/:companyId")
   .get(UserAuthenticationMiddleware, UserGetCompanyJobs);
