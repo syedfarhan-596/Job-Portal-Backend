@@ -22,6 +22,7 @@ const {
   UserGetJobsById,
   UserGetCompanies,
   UserGetCompanyJobs,
+  UserGetSingleCompany,
 } = require("../../controllers/user/user");
 
 //multer to handle files
@@ -64,12 +65,10 @@ router
   .route("/send/message")
   .post(UserAuthenticationMiddleware, UserSendMessage);
 
-router
-  .route("/get/companies")
-  .get(UserAuthenticationMiddleware, UserGetCompanies);
+router.route("/get/companies").get(UserGetCompanies);
 
 //job routes
-router.route("/get/jobs").get(UserAuthenticationMiddleware, UserGetAllJobs);
+router.route("/get/jobs").get(UserGetAllJobs);
 router
   .route("/get/jobs/job/:id")
   .get(UserAuthenticationMiddleware, UserSingleJobController);
@@ -78,8 +77,8 @@ router
   .route("/user/get/jobs/ids")
   .post(UserAuthenticationMiddleware, UserGetJobsById);
 
-router
-  .route("/get/jobs/:companyId")
-  .get(UserAuthenticationMiddleware, UserGetCompanyJobs);
+router.route("/get/jobs/:companyId").get(UserGetCompanyJobs);
+
+router.route("/get/company/:companyId").get(UserGetSingleCompany);
 
 module.exports = router;

@@ -119,6 +119,13 @@ const UserGetCompanyJobs = async (req, res) => {
   res.status(StatusCodes.OK).json(jobs);
 };
 
+//get single company
+const UserGetSingleCompany = async (req, res) => {
+  const companyId = req.params.companyId;
+  const { company } = await Userservices.getCompany(companyId);
+  res.status(StatusCodes.OK).json(company);
+};
+
 module.exports = {
   UserLoginController,
   UserRegisterController,
@@ -135,4 +142,5 @@ module.exports = {
   UserGetJobsById,
   UserGetCompanies,
   UserGetCompanyJobs,
+  UserGetSingleCompany,
 };

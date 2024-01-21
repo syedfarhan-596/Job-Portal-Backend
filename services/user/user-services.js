@@ -75,6 +75,15 @@ class Userservices {
       .limit(10);
     return { companies };
   }
+
+  //get single company
+  static async getCompany(companyId) {
+    const company = await Company.findById({ _id: companyId }).select(
+      "-password"
+    );
+    return { company };
+  }
+
   //save job in user profile
   static async saveJob(jobDetails, reqUser, reqBody) {
     reqBody.jobId = jobDetails;
