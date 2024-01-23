@@ -73,7 +73,8 @@ class Userservices {
       .select("-email -password ")
       .skip(skip)
       .limit(10);
-    return { companies };
+    const count = await Company.countDocuments({});
+    return { companies, count };
   }
 
   //get single company
@@ -82,6 +83,17 @@ class Userservices {
       "-password"
     );
     return { company };
+  }
+
+  //get similar company
+  static async getSimilarCompany(companyId, industry) {
+    const similarCompany = await Company.find({
+      _id: { $ne: companyId },
+      industry,
+    })
+      .select("-password")
+      .limit(3);
+    return { similarCompany };
   }
 
   //save job in user profile

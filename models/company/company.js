@@ -37,6 +37,9 @@ const CompanySchema = new mongoose.Schema(
       type: String,
       required: [true, "please provide location"],
     },
+    companyLogo: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

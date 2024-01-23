@@ -54,6 +54,9 @@ const GetController = async (req, res) => {
 
 const UpdateController = async (req, res) => {
   const companyId = req.user.companyId;
+  if (req.file) {
+    req.body.companyLogo = `localhost:4000/companylogo/${req.file.filename}`;
+  }
   const company = await CompanyAuth.findByIdAndUpdate(companyId, req.body, {
     runValidators: true,
     new: true,

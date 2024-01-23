@@ -39,8 +39,8 @@ const UserGetController = async (req, res) => {
 //get jobs with limit 10
 const UserGetAllJobs = async (req, res) => {
   const queryData = req.query;
-  const { jobs } = await UserJobs.getAllJobs(queryData);
-  res.status(StatusCodes.OK).json({ jobs });
+  const { jobs, count } = await UserJobs.getAllJobs(queryData);
+  res.status(StatusCodes.OK).json({ jobs, count });
 };
 
 //get single job
@@ -101,29 +101,33 @@ const UserApplyController = async (req, res) => {
 const UserGetJobsById = async (req, res) => {
   const data = req.body;
   const { jobs } = await UserJobs.getJobsByIds(data);
-  res.status(StatusCodes.OK).json(jobs);
+  res.status(StatusCodes.OK).json({ jobs });
 };
 
 //get companies
 const UserGetCompanies = async (req, res) => {
   const queryData = req.query;
-  const { companies } = await Userservices.getCompanies(queryData);
-  res.status(StatusCodes.OK).json(companies);
+  const { companies, count } = await Userservices.getCompanies(queryData);
+  res.status(StatusCodes.OK).json({ companies, count });
 };
 
 //get jobs from a specific company
 const UserGetCompanyJobs = async (req, res) => {
   const queryData = req.query;
   const companyId = req.params.companyId;
-  const { jobs } = await UserJobs.getCompanyJobs(queryData, companyId);
-  res.status(StatusCodes.OK).json(jobs);
+  const { jobs, count } = await UserJobs.getCompanyJobs(queryData, companyId);
+  res.status(StatusCodes.OK).json({ jobs, count });
 };
 
 //get single company
 const UserGetSingleCompany = async (req, res) => {
   const companyId = req.params.companyId;
   const { company } = await Userservices.getCompany(companyId);
-  res.status(StatusCodes.OK).json(company);
+  const { similarCompany } = await Userservices.getSimilarCompany(
+    companyId,
+    company.industry
+  );
+  res.status(StatusCodes.OK).json({ company, similarCompany });
 };
 
 module.exports = {

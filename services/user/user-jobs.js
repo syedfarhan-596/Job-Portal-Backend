@@ -23,8 +23,8 @@ class UserJobs {
       .sort({ createdAt: 1 })
       .skip(skip)
       .limit(10);
-
-    return { jobs };
+    const count = await JobSchema.countDocuments(QueryObject);
+    return { jobs, count };
   }
 
   //get single job
@@ -40,7 +40,6 @@ class UserJobs {
   static async getJobsByIds(reqBody) {
     const jobIds = reqBody.savedJobs?.map((item) => item.jobId);
     const jobs = await JobSchema.find({ _id: { $in: jobIds } });
-
     return { jobs };
   }
 
@@ -51,8 +50,8 @@ class UserJobs {
     const jobs = await JobSchema.find({ postedBy: companyId })
       .skip(skip)
       .limit(10);
-
-    return { jobs };
+    const count = await JobSchema.countDocuments({ postedBy: companyId });
+    return { jobs, count };
   }
 }
 

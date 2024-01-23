@@ -1,9 +1,9 @@
 const multer = require("multer");
 const path = require("path");
 
-const Multer = () => {
+const Multer = (fileType) => {
   const storage = multer.diskStorage({
-    destination: path.join(__dirname, "./uploads/resume"),
+    destination: path.join(__dirname, `./uploads/${fileType}`),
     filename: (req, file, cd) => {
       return cd(
         null,

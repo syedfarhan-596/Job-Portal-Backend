@@ -27,21 +27,10 @@ const Userservices = require("./services/user/user-services");
 const app = express();
 
 app.use("/resume", express.static("./uploads/resume"));
+app.use("/companylogo", express.static("./uploads/companylogo"));
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
-
-app.get("/jobs", async (req, res) => {
-  const queryData = req.query;
-  const { jobs } = await UserJobs.getAllJobs(queryData);
-  res.status(StatusCodes.OK).json({ jobs, total: jobs.length });
-});
-
-app.get("/companies", async (req, res) => {
-  const queryData = req.query;
-  const { companies } = await Userservices.getCompanies(queryData);
-  res.status(StatusCodes.OK).json(companies);
-});
 
 app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/company", CompanyRoutes);

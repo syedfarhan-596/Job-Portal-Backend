@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const Multer = require("../../multer");
 const CompanyAuthenticationMiddleware = require("../../middlewares/company/company-auth");
 const {
   RegisterController,
@@ -20,12 +21,18 @@ const {
   GetMessages,
 } = require("../../controllers/company/company-auth");
 
+const upload = Multer("companylogo");
+
 router.route("/login").post(LoginController);
 router.route("/register").post(RegisterController);
 router.route("/get").get(CompanyAuthenticationMiddleware, GetController);
 router
   .route("/update")
-  .patch(CompanyAuthenticationMiddleware, UpdateController);
+  .patch(
+    upload.single("logo"),
+    CompanyAuthenticationMiddleware,
+    UpdateController
+  );
 
 router.route("/createjob").post(CompanyAuthenticationMiddleware, CreateJob);
 router

@@ -26,7 +26,7 @@ const {
 } = require("../../controllers/user/user");
 
 //multer to handle files
-const upload = Multer();
+const upload = Multer("resume");
 
 //express router
 const router = express.Router();
