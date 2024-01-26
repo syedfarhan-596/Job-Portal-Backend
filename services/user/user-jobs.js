@@ -36,6 +36,15 @@ class UserJobs {
     return { job };
   }
 
+  //get similar job
+  static async getSimilarJob(jobId, industry) {
+    const similarJob = await JobSchema.find({
+      _id: { $ne: jobId },
+      industry,
+    }).limit(5);
+    return { similarJob };
+  }
+
   //get jobs by ids
   static async getJobsByIds(reqBody) {
     const jobIds = reqBody.savedJobs?.map((item) => item.jobId);

@@ -12,6 +12,12 @@ const ApplySchema = new mongoose.Schema(
     appliedCompanyId: {
       type: mongoose.Types.ObjectId,
     },
+    appliedCompanyName: {
+      type: String,
+    },
+    appliedJob: {
+      type: String,
+    },
     firstName: {
       type: String,
     },
@@ -31,6 +37,14 @@ const ApplySchema = new mongoose.Schema(
 
     location: {
       type: String,
+    },
+    status: {
+      type: Boolean,
+      default: false,
+    },
+    companyAction: {
+      type: Boolean,
+      default: false,
     },
   },
   {

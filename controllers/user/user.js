@@ -47,7 +47,11 @@ const UserGetAllJobs = async (req, res) => {
 const UserSingleJobController = async (req, res) => {
   const { id } = req.params;
   const { job } = await UserJobs.getSingleJob(id);
-  res.status(StatusCodes.OK).json(job);
+  const { similarJob } = await UserJobs.getSimilarJob(id, job.industry);
+  res.status(StatusCodes.OK).json({
+    job,
+    similarJob,
+  });
 };
 
 //get user chats
@@ -93,8 +97,19 @@ const UserUnsaveJob = async (req, res) => {
 const UserApplyController = async (req, res) => {
   const { companyId, jobId } = req.params;
   const userId = req.user.userId;
-  const result = await Userservices.applyJob(companyId, userId, jobId);
+  const result = await Userservices.applyJob(
+    companyId,
+    userId,
+    jobId,
+    req.body
+  );
   res.status(StatusCodes.OK).json(result);
+};
+
+//get applicaitons
+const UserGetApplications = async (req, res) => {
+  const { applications } = await Userservices.applications(req.user.userId);
+  res.status(StatusCodes.OK).json({ applications });
 };
 
 //to get jobs which are in saved
@@ -147,4 +162,5 @@ module.exports = {
   UserGetCompanies,
   UserGetCompanyJobs,
   UserGetSingleCompany,
+  UserGetApplications,
 };

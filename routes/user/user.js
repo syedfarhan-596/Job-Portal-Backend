@@ -23,6 +23,7 @@ const {
   UserGetCompanies,
   UserGetCompanyJobs,
   UserGetSingleCompany,
+  UserGetApplications,
 } = require("../../controllers/user/user");
 
 //multer to handle files
@@ -69,9 +70,7 @@ router.route("/get/companies").get(UserGetCompanies);
 
 //job routes
 router.route("/get/jobs").get(UserGetAllJobs);
-router
-  .route("/get/jobs/job/:id")
-  .get(UserAuthenticationMiddleware, UserSingleJobController);
+router.route("/get/jobs/job/:id").get(UserSingleJobController);
 
 router
   .route("/user/get/jobs/ids")
@@ -80,5 +79,9 @@ router
 router.route("/get/jobs/:companyId").get(UserGetCompanyJobs);
 
 router.route("/get/company/:companyId").get(UserGetSingleCompany);
+
+router
+  .route("/get/applications")
+  .get(UserAuthenticationMiddleware, UserGetApplications);
 
 module.exports = router;

@@ -40,6 +40,7 @@ class Userservices {
         updatedFields[`profile.${field}`] = reqData[field];
       }
     });
+    console.log(preferences);
 
     // Include preferences in updatedFields object if data is provided
     if (preferences) {
@@ -119,7 +120,7 @@ class Userservices {
   }
 
   //user apply for job
-  static async applyJob(companyId, reqUser, jobId) {
+  static async applyJob(companyId, reqUser, jobId, reqBody) {
     await ApplySchema.create({
       ...reqBody,
       appliedByUserId: reqUser,
@@ -127,6 +128,12 @@ class Userservices {
       appliedJobId: jobId,
     });
     return { msg: "Applied Successfully" };
+  }
+
+  //get applications
+  static async applications(userId) {
+    const applications = await ApplySchema.find({ appliedByUserId: userId });
+    return { applications };
   }
 
   //get user conversations
