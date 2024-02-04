@@ -40,7 +40,6 @@ class Userservices {
         updatedFields[`profile.${field}`] = reqData[field];
       }
     });
-    console.log(preferences);
 
     // Include preferences in updatedFields object if data is provided
     if (preferences) {
@@ -68,13 +67,45 @@ class Userservices {
 
   //get companies
   static async getCompanies(reqQuery) {
-    const { page = 1 } = reqQuery;
+    const { page = 1, location, company, industry } = reqQuery;
     const skip = (page - 1) * 10;
-    const companies = await Company.find({})
+
+    let QueryObject = {};
+
+    if (location) {
+      if (location && Array.isArray(location)) {
+        QueryObject.location = {
+          $in: location.map((location) => new RegExp(location, "i")),
+        };
+      } else {
+        QueryObject.location = { $regex: location, $options: "i" };
+      }
+    }
+    if (company) {
+      if (Array.isArray(company)) {
+        QueryObject.name = {
+          $in: company.map((company) => new RegExp(company, "i")),
+        };
+      } else {
+        QueryObject.name = { $regex: company, $options: "i" };
+      }
+    }
+    if (industry) {
+      if (Array.isArray(industry)) {
+        QueryObject.industry = {
+          $in: industry.map((industry) => new RegExp(industry, "i")),
+        };
+      } else {
+        QueryObject.industry = { $regex: industry, $options: "i" };
+      }
+    }
+
+    console.log(QueryObject);
+    const companies = await Company.find(QueryObject)
       .select("-email -password ")
       .skip(skip)
       .limit(10);
-    const count = await Company.countDocuments({});
+    const count = await Company.countDocuments(QueryObject);
     return { companies, count };
   }
 

@@ -17,7 +17,7 @@ const JobSchema = new mongoose.Schema(
       type: String,
     },
     location: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       required: [true, "please provide location"],
     },
     jobType: {

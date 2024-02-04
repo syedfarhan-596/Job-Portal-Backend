@@ -39,8 +39,8 @@ const UserGetController = async (req, res) => {
 //get jobs with limit 10
 const UserGetAllJobs = async (req, res) => {
   const queryData = req.query;
-  const { jobs, count } = await UserJobs.getAllJobs(queryData);
-  res.status(StatusCodes.OK).json({ jobs, count });
+  const { jobs, count, params } = await UserJobs.getAllJobs(queryData);
+  res.status(StatusCodes.OK).json({ jobs, count, params });
 };
 
 //get single job
