@@ -43,6 +43,18 @@ const UserGetAllJobs = async (req, res) => {
   res.status(StatusCodes.OK).json({ jobs, count, params });
 };
 
+//get recommended jobs
+const RecommendedJobs = async (req, res) => {
+  const { user } = await Userservices.getUser(req.user.userId);
+  const preferences = await UserJobs.getAllJobs({
+    location: user?.preferences?.location,
+    name: user?.preferences?.jobTitle,
+  });
+  const allJobs = await UserJobs.getAllJobs({});
+
+  res.status(StatusCodes.OK).json({ allJobs, preferences });
+};
+
 //get single job
 const UserSingleJobController = async (req, res) => {
   const { id } = req.params;
@@ -163,4 +175,5 @@ module.exports = {
   UserGetCompanyJobs,
   UserGetSingleCompany,
   UserGetApplications,
+  RecommendedJobs,
 };

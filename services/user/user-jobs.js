@@ -18,7 +18,6 @@ class UserJobs {
     } = reqQuery;
 
     //If provided the we include in query object and filter out result
-    console.log(reqQuery);
 
     let QueryObject = {};
     const skip = (page - 1) * 10;
@@ -104,6 +103,8 @@ class UserJobs {
     }
     return { job };
   }
+
+  static async getRecommended(user) {}
 
   //get similar job
   static async getSimilarJob(jobId, industry) {

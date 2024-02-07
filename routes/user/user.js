@@ -24,6 +24,7 @@ const {
   UserGetCompanyJobs,
   UserGetSingleCompany,
   UserGetApplications,
+  RecommendedJobs,
 } = require("../../controllers/user/user");
 
 //multer to handle files
@@ -70,6 +71,9 @@ router.route("/get/companies").get(UserGetCompanies);
 
 //job routes
 router.route("/get/jobs").get(UserGetAllJobs);
+router
+  .route("/get/recommendedjobs")
+  .get(UserAuthenticationMiddleware, RecommendedJobs);
 router.route("/get/jobs/job/:id").get(UserSingleJobController);
 
 router

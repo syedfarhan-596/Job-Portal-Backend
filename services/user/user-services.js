@@ -100,7 +100,6 @@ class Userservices {
       }
     }
 
-    console.log(QueryObject);
     const companies = await Company.find(QueryObject)
       .select("-email -password ")
       .skip(skip)
